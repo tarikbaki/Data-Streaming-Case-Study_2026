@@ -9,38 +9,27 @@ scrape_configs:
   # =======================
   # Node Exporter
   # =======================
-  - job_name: 'node_exporter'
-    static_configs:
-      - targets: [
-          # terraform output'tan script ile doldurulacak
-        ]
+  # AUTO-NODE-EXPORTER-START
+  # targets will be inserted here
+  # AUTO-NODE-EXPORTER-END
 
   # =======================
   # Kafka Broker JMX
   # =======================
-  - job_name: 'kafka_broker_jmx'
-    static_configs:
-      - targets: [
-          # example: 1.2.3.4:5555
-        ]
-    metrics_path: "/metrics"
+  # AUTO-BROKER-JMX-START
+  # targets will be inserted here
+  # AUTO-BROKER-JMX-END
 
   # =======================
   # Kafka Controller JMX
   # =======================
-  - job_name: 'kafka_controller_jmx'
-    static_configs:
-      - targets: [
-          # example: 1.2.3.4:5556
-        ]
-    metrics_path: "/metrics"
+  # AUTO-CONTROLLER-JMX-START
+  # targets will be inserted here
+  # AUTO-CONTROLLER-JMX-END
 
   # =======================
   # Kafka Connect JMX
   # =======================
-  - job_name: 'kafka_connect_jmx'
-    static_configs:
-      - targets: [
-          # example: connect_node_ip:7777
-        ]
-    metrics_path: "/metrics"
+  # AUTO-CONNECT-JMX-START
+  # targets will be inserted here
+  # AUTO-CONNECT-JMX-END
