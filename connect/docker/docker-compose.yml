@@ -11,7 +11,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CCONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://10.20.1.10:9092"
+      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://10.20.1.10:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"

@@ -15,7 +15,7 @@ OBS=$(terraform -chdir=terraform/envs/prod output -raw obs_ip)
 
 # hosts.ini dosyasını tamamen sıfırdan oluşturuyorum
 cat <<EOF > $INV_FILE
-[broker]
+[brokers]
 EOF
 
 i=0
@@ -26,7 +26,7 @@ done
 
 cat <<EOF >> $INV_FILE
 
-[controller]
+[controllers]
 EOF
 
 i=0
