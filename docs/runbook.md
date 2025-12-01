@@ -94,3 +94,25 @@ curl http://CONNECT_IP:8083/connectors
 silme:
 curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 
+## 8) Observability (Prometheus + Alertmanager + Grafana)
+
+- observability ec2 uzerinde prometheus, alertmanager ve grafana calistiriyorum
+- prometheus.yml baslangicta bos targetliydi
+- terraform outputlarindan ip'leri alip prometheus dosyasina target olarak yazan script yazdim:
+
+scripts/update_prometheus_targets.sh
+- node exporter butun ec2'lerde systemd servisi olarak calisacak
+- kafka broker ve controller icin jmx exporter portlarini ansible ile acacagim
+- connect icin de jmx portu expose edecegim
+
+Prometheus baslatma:
+./prometheus --config.file=prometheus.yml
+
+
+Grafana baslatma:
+./grafana-server
+
+
+Alertmanager baslatma:
+./alertmanager --config.file=alertmanager.yml
+
