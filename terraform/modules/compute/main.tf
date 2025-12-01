@@ -1,3 +1,8 @@
+# Bu compute modülünde broker, controller, connect ve observability için EC2'leri oluşturuyorum.
+# Terraform apply sonrası bütün instance'lar burada yaratılıyor.
+# Subnet ve SG bilgilerini dışarıdan alıyorum, modül sade kalsın diye.
+
+
 variable "project_name" { type = string }
 variable "vpc_id"        { type = string }
 variable "subnets"       { type = list(string) }

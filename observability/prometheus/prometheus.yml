@@ -1,3 +1,9 @@
+# Bu dosyada Prometheus'un tüm scrape ayarlarını tutuyorum.
+# Target listelerini elle yazmak yerine, Terraform output'lardan
+# otomatik dolduran bir script kullanıyorum.
+# Aşağıdaki AUTO-START/END bloklarını script dolduruyor.
+
+
 global:
   scrape_interval: 5s
 

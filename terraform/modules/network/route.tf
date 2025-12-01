@@ -1,3 +1,7 @@
+# Route table ve default route'u burada tanımladım.
+# Public subnetlerin internet erişimi için gerekli.
+
+
 # route table + default route
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.this.id

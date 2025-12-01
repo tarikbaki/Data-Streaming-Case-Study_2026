@@ -1,3 +1,5 @@
+# Network modülünün VPC tanımı burada duruyor.
+
 resource "aws_vpc" "this" {
   cidr_block = var.cidr_block
 }

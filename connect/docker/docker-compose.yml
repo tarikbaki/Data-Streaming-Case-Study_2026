@@ -1,3 +1,7 @@
+# Kafka Connect'i burada docker-compose ile ayaga kaldiriyorum.
+# Tek node yeterli ama case icin 2 worker koydum. Plugin klasoru de burada.
+# Bootstrap server ip'sini terraform output'tan alip buraya yaziyorum.
+
 version: "3"
 
 services:

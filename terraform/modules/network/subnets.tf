@@ -1,4 +1,8 @@
 # üç tane public subnet açıyorum
+# Public subnetleri ayrı dosyada tuttum, AZ bazlı ayırmak daha düzenli geliyor.
+# Case gereği 3 AZ kullanıyorum.
+
+
 resource "aws_subnet" "public_a" {
   vpc_id            = aws_vpc.this.id
   cidr_block        = "10.20.1.0/24"

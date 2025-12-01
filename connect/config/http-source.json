@@ -1,3 +1,8 @@
+/* Bu config HTTP Source Connector için.
+   Admin API’nin /topics endpoint’ini belirli aralıklarla çekip
+   gelen veriyi topic-1’e yazması için ayarladım.
+   Basit tutmaya çalıştım, plugin ayarları minimum seviyede. */
+
 {
   "name": "http-source-1",
   "config": {
