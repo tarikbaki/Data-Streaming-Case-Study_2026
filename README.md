@@ -5,7 +5,7 @@ Adımları sade ve net biçimde ilerlettim.
 
 ---
 
-## 1) Terraform ile Infrastruktur Hazırlığı
+## 1) Terraform ile Infra Hazırlığı
 
 - VPC oluşturdum (10.20.0.0/16)
 - 3 adet public subnet açtım (eu-central-1a, 1b, 1c)
