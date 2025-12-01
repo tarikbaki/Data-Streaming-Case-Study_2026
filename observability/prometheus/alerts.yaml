@@ -1,3 +1,7 @@
+# Bu alert kurallarını çok detaylı yapmadım, temel şeyleri ekledim.
+# Infra + Kafka + Connect tarafında en kritik metrikleri takip ediyorum.
+# Prometheus'ta hızlıca sorun görmek için yeterli oluyor.
+
 groups:
 
   - name: infra-alerts
