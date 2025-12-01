@@ -1,4 +1,9 @@
 #!/bin/bash
+# Bu scripti kendime kolaylık olsun diye yazdım.
+# Terraform’dan gelen IP’lerle inventory’i güncelliyor, sonra da
+# Kafka cluster + node exporter + jmx exporter kurulumlarını sırayla çalıştırıyorum.
+# Yani tek komutla tüm provisioning bitsin diye düşündüm.
+
 set -e
 
 echo "[INFO] Updating inventory from Terraform outputs..."

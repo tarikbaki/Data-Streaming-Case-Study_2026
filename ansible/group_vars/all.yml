@@ -1,3 +1,7 @@
+# Bu dosyada broker ve controller için temel Kafka ayarlarını topladım.
+# Güvenlik, KRaft config, JMX portları gibi şeyleri tek bir yerde tutayım dedim.
+# cp-ansible hepsini buradan alıyor, ben de karışıklık olmadan yönetiyorum.
+
 # ==========================
 # GLOBAL SECURITY SETTINGS
 # ==========================
@@ -35,7 +39,6 @@ kafka_broker:
     # rack awareness (use AZ codes)
     broker.rack: "{{ ansible_host | regex_replace('^.*(1a|1b|1c)$', '\\1') }}"
 
-
 # ==========================
 # CONTROLLER CONFIG
 # ==========================
@@ -49,8 +52,7 @@ kafka_controller:
     controller.quorum.voters: >
       0@controller-0:9093,
       1@controller-1:9093,
-      2@controller-2:9093"
-
+      2@controller-2:9093
 
 # ==========================
 # JMX EXPORTER
