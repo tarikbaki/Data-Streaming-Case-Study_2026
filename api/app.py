@@ -1,3 +1,7 @@
+# Bu dosyada admin API'yi basit şekilde topladım.
+# Topic, consumer group vs. işlemlerini buradan yapıyorum.
+# Çok detaylandırmadım, işimi gören minimal bir API oldu.
+
 import os
 import json
 from flask import Flask, request, jsonify
