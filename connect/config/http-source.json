@@ -1,0 +1,14 @@
+{
+  "name": "http-source-1",
+  "config": {
+    "connector.class": "org.apache.kafka.connect.http.HttpSourceConnector",
+    "tasks.max": "1",
+    "http.api.url": "http://OBS_IP:2020/topics",
+    "http.api.method": "GET",
+    "poll.interval.ms": "5000",
+    "kafka.topic": "topic-1",
+    "http.headers": "",
+    "http.connect.timeout.ms": "10000",
+    "http.read.timeout.ms": "10000"
+  }
+}
