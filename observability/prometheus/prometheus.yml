@@ -1,0 +1,46 @@
+global:
+  scrape_interval: 5s
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+
+  # =======================
+  # Node Exporter
+  # =======================
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: [
+          # terraform output'tan script ile doldurulacak
+        ]
+
+  # =======================
+  # Kafka Broker JMX
+  # =======================
+  - job_name: 'kafka_broker_jmx'
+    static_configs:
+      - targets: [
+          # example: 1.2.3.4:5555
+        ]
+    metrics_path: "/metrics"
+
+  # =======================
+  # Kafka Controller JMX
+  # =======================
+  - job_name: 'kafka_controller_jmx'
+    static_configs:
+      - targets: [
+          # example: 1.2.3.4:5556
+        ]
+    metrics_path: "/metrics"
+
+  # =======================
+  # Kafka Connect JMX
+  # =======================
+  - job_name: 'kafka_connect_jmx'
+    static_configs:
+      - targets: [
+          # example: connect_node_ip:7777
+        ]
+    metrics_path: "/metrics"
