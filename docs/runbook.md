@@ -150,6 +150,15 @@ curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
 ### Connector silme
 curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 
+### Bootstrap server ip’yi compose icine ekleme
 
+terraform output:
+terraform -chdir=terraform/envs/prod output broker_ips
+
+ilk broker ip’sini alıyorum, ör:
+1.2.3.4
+
+docker-compose.yml içinde:
+CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
 
 
