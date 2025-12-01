@@ -48,3 +48,18 @@ ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
 - http source plugin için plugins klasörünü oluşturdum
 - bootstrap ip’yi sonra terraform output’tan alıp compose içinde güncelleyeceğim
 
+## 6) Admin API (Flask + AdminClient)
+
+- api klasorunu actim
+- requirements.txt icine confluent-kafka ve flask ekledim
+- dockerfile yazdim
+- app.py icine brokers/topics/consumer-groups icin endpointleri koydum
+- uygulama 2020 portunda calisiyor
+- kafka baglantisini env ile yapiyorum:
+  KAFKA_BOOTSTRAP_SERVERS="1.2.3.4:9092"
+
+calistirmak icin:
+
+docker build -t admin-api .
+docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
+
