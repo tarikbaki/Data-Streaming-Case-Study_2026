@@ -77,14 +77,6 @@ docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
 - connector config dosyasini ekledim (connect/config/http-source.json)
 
 connector yaratma:
-
-## 7) Kafka Connect
-
-- docker-compose ile connect nodeunu ayaga kaldirdim
-- plugin klasoru actim (http source icin)
-- connector config dosyasini ekledim (connect/config/http-source.json)
-
-connector yaratma:
 curl -X POST -H "Content-Type: application/json"
 --data @connect/config/http-source.json
 http://CONNECT_IP:8083/connectors
