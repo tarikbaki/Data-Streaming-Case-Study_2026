@@ -3,6 +3,7 @@
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
 
+      Bu çalışma, aws maliyet yaratmamak adına Terraform apply uygulanmadan hazırlanmıştır. Tüm kaynak tanımları eksiksizdir ve plan çıktısı çalışır durumdadır. Request halinde apply yapılacak altyapı hazırdır.
 ---
 ![alt text](docs/diag.png)
 
