@@ -3,11 +3,11 @@ version: "3"
 services:
   connect:
     image: confluentinc/cp-kafka-connect:7.6.0
-    container_name: kafka-connect
+    container_name: kafka-connect-1
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://BROKER_0_IP:9092"
+      CCONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://10.20.1.10:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
@@ -15,7 +15,25 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-1"
       CONNECT_PLUGIN_PATH: "/usr/share/java"
+      CONNECT_JMX_PORT: "7777"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
+    volumes:
+      - ./plugins:/usr/share/java
+
+  connect2:
+    image: confluentinc/cp-kafka-connect:7.6.0
+    container_name: kafka-connect-2
+    ports:
+      - "8084:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://10.20.1.10:9092"
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-2"
+      CONNECT_PLUGIN_PATH: "/usr/share/java"
+      CONNECT_JMX_PORT: "7777"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
     volumes:
       - ./plugins:/usr/share/java
