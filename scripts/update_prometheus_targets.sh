@@ -9,55 +9,47 @@ OBS=$(terraform -chdir=terraform/envs/prod output -raw obs_ip)
 
 PROM_FILE="observability/prometheus/prometheus.yml"
 
-# eski targetlari temizle
-sed -i '' '/node_exporter/,/targets/d' $PROM_FILE
-sed -i '' '/kafka_jmx/,/targets/d' $PROM_FILE
-sed -i '' '/connect_jmx/,/targets/d' $PROM_FILE
+# Temiz bir YAML üretmek için yedek alıp blokları yeniden yazıyorum.
+tmpfile=$(mktemp)
 
-# tekrar ekle
-cat <<EOF >> $PROM_FILE
+awk '
+  /AUTO-NODE-EXPORTER-START/ {print; print "  - job_name: \"node_exporter\""; print "    static_configs:"; print "      - targets: ["; for (i in ne_targets) {} next}
+  /AUTO-BROKER-JMX-START/ {print; print "  - job_name: \"kafka_broker_jmx\""; print "    static_configs:"; print "      - targets: ["; next}
+  /AUTO-CONTROLLER-JMX-START/ {print; print "  - job_name: \"kafka_controller_jmx\""; print "    static_configs:"; print "      - targets: ["; next}
+  /AUTO-CONNECT-JMX-START/ {print; print "  - job_name: \"connect_jmx\""; print "    static_configs:"; print "      - targets: ["; next}
+  /AUTO-NODE-EXPORTER-END/ {print "        ]"; print; next}
+  /AUTO-BROKER-JMX-END/ {print "        ]"; print; next}
+  /AUTO-CONTROLLER-JMX-END/ {print "        ]"; print; next}
+  /AUTO-CONNECT-JMX-END/ {print "        ]"; print; next}
+  {print}
+' BROKERS="$BROKERS" CONTROLLERS="$CONTROLLERS" CONNECT="$CONNECT" OBS="$OBS" "$PROM_FILE" > "$tmpfile"
 
-  - job_name: 'node_exporter'
-    static_configs:
-      - targets: [
-EOF
+# Targets ekle
+add_targets() {
+  job_line="$1"
+  shift
+  for t in "$@"; do
+    sed -i '' "/$job_line/{n;n;n; s/]$/          \"$t\",\\n        ]/}" "$tmpfile"
+  done
+  # son virgülü temizle
+  sed -i '' "/$job_line/{n;n;n; s/,\\n        ]/\\n        ]/}" "$tmpfile"
+}
 
-for ip in $BROKERS; do
-  echo "          \"$ip:9100\"," >> $PROM_FILE
-done
+node_targets=()
+for ip in $BROKERS; do node_targets+=("$ip:9100"); done
+for ip in $CONTROLLERS; do node_targets+=("$ip:9100"); done
+node_targets+=("$CONNECT:9100" "$OBS:9100")
+add_targets "node_exporter" "${node_targets[@]}"
 
-for ip in $CONTROLLERS; do
-  echo "          \"$ip:9100\"," >> $PROM_FILE
-done
+broker_targets=()
+for ip in $BROKERS; do broker_targets+=("$ip:5555"); done
+add_targets "kafka_broker_jmx" "${broker_targets[@]}"
 
-echo "          \"$CONNECT:9100\"," >> $PROM_FILE
-echo "          \"$OBS:9100\"" >> $PROM_FILE
-echo "        ]" >> $PROM_FILE
+controller_targets=()
+for ip in $CONTROLLERS; do controller_targets+=("$ip:5556"); done
+add_targets "kafka_controller_jmx" "${controller_targets[@]}"
 
+add_targets "connect_jmx" "$CONNECT:7777"
 
-cat <<EOF >> $PROM_FILE
-
-  - job_name: 'kafka_jmx'
-    static_configs:
-      - targets: [
-EOF
-
-for ip in $BROKERS; do
-  echo "          \"$ip:5555\"," >> $PROM_FILE
-done
-
-for ip in $CONTROLLERS; do
-  echo "          \"$ip:5556\"," >> $PROM_FILE
-done
-
-echo "        ]" >> $PROM_FILE
-
-
-cat <<EOF >> $PROM_FILE
-
-  - job_name: 'connect_jmx'
-    static_configs:
-      - targets: [
-          "$CONNECT:7777"
-        ]
-EOF
+mv "$tmpfile" "$PROM_FILE"
+echo "Prometheus targets güncellendi: $PROM_FILE"

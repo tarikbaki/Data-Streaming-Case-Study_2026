@@ -6,6 +6,7 @@ import os
 import json
 from flask import Flask, request, jsonify
 from confluent_kafka.admin import AdminClient, NewTopic, ConfigResource
+from confluent_kafka import KafkaException
 
 app = Flask(__name__)
 
@@ -15,10 +16,10 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 # guvenlik ayarlari icin buraya ekleme yapilabilir (sasl_ssl vs)
 kafka_config = {
     "bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
-    # "security.protocol": "SASL_SSL",
-    # "sasl.mechanisms": "SCRAM-SHA-512",
-    # "sasl.username": os.getenv("KAFKA_USERNAME", ""),
-    # "sasl.password": os.getenv("KAFKA_PASSWORD", ""),
+    "security.protocol": os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_SSL"),
+    "sasl.mechanisms": os.getenv("KAFKA_SASL_MECHANISMS", "SCRAM-SHA-512"),
+    "sasl.username": os.getenv("KAFKA_USERNAME", "broker"),
+    "sasl.password": os.getenv("KAFKA_PASSWORD", "brokerpass"),
 }
 
 admin = AdminClient(kafka_config)
@@ -56,23 +57,23 @@ def list_brokers():
 @app.route("/topics", methods=["GET"])
 def list_topics():
     try:
-        md = admin.list_topics(timeout=10)
-        topics = []
-        for name, t in md.topics.items():
-            # internal topicleri istersen filtreleyebilirsin
-            partitions = len(t.partitions)
-            rf = 0
-            if partitions > 0:
-                # herhangi bir partitiondan rf cikar
-                rf = len(next(iter(t.partitions.values())).replicas)
-            topics.append(
-                {
-                    "name": name,
-                    "partitions": partitions,
-                    "replication_factor": rf,
-                }
-            )
-        return jsonify(topics)
+    md = admin.list_topics(timeout=10)
+    topics = []
+    for name, t in md.topics.items():
+        if name.startswith("__"):  # internal konulari gizle
+            continue
+        partitions = len(t.partitions)
+        rf = 0
+        if partitions > 0:
+            rf = len(next(iter(t.partitions.values())).replicas)
+        topics.append(
+            {
+                "name": name,
+                "partitions": partitions,
+                "replication_factor": rf,
+            }
+        )
+    return jsonify(topics)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

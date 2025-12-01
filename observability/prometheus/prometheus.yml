@@ -16,26 +16,34 @@ scrape_configs:
   # Node Exporter
   # =======================
   # AUTO-NODE-EXPORTER-START
-  # targets will be inserted here
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: []
   # AUTO-NODE-EXPORTER-END
 
   # =======================
   # Kafka Broker JMX
   # =======================
   # AUTO-BROKER-JMX-START
-  # targets will be inserted here
+  - job_name: "kafka_broker_jmx"
+    static_configs:
+      - targets: []
   # AUTO-BROKER-JMX-END
 
   # =======================
   # Kafka Controller JMX
   # =======================
   # AUTO-CONTROLLER-JMX-START
-  # targets will be inserted here
+  - job_name: "kafka_controller_jmx"
+    static_configs:
+      - targets: []
   # AUTO-CONTROLLER-JMX-END
 
   # =======================
   # Kafka Connect JMX
   # =======================
   # AUTO-CONNECT-JMX-START
-  # targets will be inserted here
+  - job_name: "connect_jmx"
+    static_configs:
+      - targets: []
   # AUTO-CONNECT-JMX-END

@@ -9,6 +9,15 @@
 ssl_enabled: true
 sasl_protocol: "SASL_SSL"
 sasl_mechanism: "SCRAM-SHA-512"
+ssl_mutual_auth_enabled: false
+
+# Basit self-signed keystore/truststore yollarını burada tutuyorum.
+# Gerçekte bunları ansible vault ile şifreleyip dosya olarak dağıtmak gerekir.
+ssl_keystore_filepath: "/etc/kafka/secrets/kafka.keystore.jks"
+ssl_truststore_filepath: "/etc/kafka/secrets/kafka.truststore.jks"
+ssl_keystore_password: "changeit"
+ssl_truststore_password: "changeit"
+ssl_key_password: "changeit"
 
 # SASL user for brokers
 kafka_broker:
@@ -22,9 +31,9 @@ kafka_broker:
     node.id: "{{ inventory_hostname | regex_findall('[0-9]+') | first }}"
 
     # listeners
-    listeners: "PLAINTEXT://:9092,CONTROLLER://:9093"
-    advertised.listeners: "PLAINTEXT://{{ ansible_host }}:9092"
-    inter.broker.listener.name: "PLAINTEXT"
+    listeners: "SASL_SSL://:9092,CONTROLLER://:9093"
+    advertised.listeners: "SASL_SSL://{{ ansible_host }}:9092"
+    inter.broker.listener.name: "SASL_SSL"
     controller.listener.names: "CONTROLLER"
 
     # KRaft quorum voters
@@ -37,7 +46,7 @@ kafka_broker:
     num.partitions: 3
 
     # rack awareness (use AZ codes)
-    broker.rack: "{{ ansible_host | regex_replace('^.*(1a|1b|1c)$', '\\1') }}"
+    broker.rack: "{{ hostvars[inventory_hostname].availability_zone | default('unset') }}"
 
 # ==========================
 # CONTROLLER CONFIG

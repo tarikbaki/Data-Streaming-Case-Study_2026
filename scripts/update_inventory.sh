@@ -20,7 +20,7 @@ EOF
 
 i=0
 for ip in $BROKERS; do
-  echo "broker-$i ansible_host=$ip" >> $INV_FILE
+  echo "broker-$i ansible_host=$ip availability_zone=eu-central-1$([ $((i%2)) -eq 0 ] && echo 'a' || echo 'b')" >> $INV_FILE
   i=$((i+1))
 done
 
@@ -31,7 +31,10 @@ EOF
 
 i=0
 for ip in $CONTROLLERS; do
-  echo "controller-$i ansible_host=$ip" >> $INV_FILE
+  az="a"
+  if [ $i -eq 1 ]; then az="b"; fi
+  if [ $i -eq 2 ]; then az="c"; fi
+  echo "controller-$i ansible_host=$ip availability_zone=eu-central-1${az}" >> $INV_FILE
   i=$((i+1))
 done
 
