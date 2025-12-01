@@ -4,6 +4,8 @@ Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalı
 Adımları sade ve net biçimde ilerlettim.
 
 ---
+![alt text](docs/diag.png)
+
 
 ## 1) Terraform ile Infra Hazırlığı
 
