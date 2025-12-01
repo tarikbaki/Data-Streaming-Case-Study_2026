@@ -7,7 +7,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://BOOTSTRAP_IP:9092"
+      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://BROKER_0_IP:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
