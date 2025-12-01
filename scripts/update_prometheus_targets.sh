@@ -49,7 +49,7 @@ controller_targets=()
 for ip in $CONTROLLERS; do controller_targets+=("$ip:5556"); done
 add_targets "kafka_controller_jmx" "${controller_targets[@]}"
 
-add_targets "connect_jmx" "$CONNECT:7777"
+add_targets "connect_jmx" "$CONNECT:7777" "$CONNECT:7778"
 
 mv "$tmpfile" "$PROM_FILE"
 echo "Prometheus targets güncellendi: $PROM_FILE"

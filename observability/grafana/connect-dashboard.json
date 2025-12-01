@@ -1,0 +1,45 @@
+{
+  "title": "Kafka Connect Overview",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Connector Count",
+      "targets": [
+        {
+          "expr": "sum(kafka_connect_connector_status_connector)",
+          "legendFormat": "{{connector}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Task State",
+      "targets": [
+        {
+          "expr": "kafka_connect_worker_task_running_state",
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Heap Usage",
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Incoming Byte Rate",
+      "targets": [
+        {
+          "expr": "kafka_producer_metrics_incoming_byte_rate",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Kafka Controller Overview",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Controller Count",
+      "targets": [
+        {
+          "expr": "max(kafka_controller_kafkacontroller_activecontrollercount)",
+          "legendFormat": "count"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Raft Commit Latency",
+      "targets": [
+        {
+          "expr": "kafka_raft_replication_quorum_election_lag_ms",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "CPU Usage",
+      "targets": [
+        {
+          "expr": "100 - (avg by (instance)(irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Memory Usage",
+      "targets": [
+        {
+          "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    }
+  ]
+}

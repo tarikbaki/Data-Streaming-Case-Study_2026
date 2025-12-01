@@ -6,7 +6,7 @@ import os
 import json
 from flask import Flask, request, jsonify
 from confluent_kafka.admin import AdminClient, NewTopic, ConfigResource
-from confluent_kafka import KafkaException
+from confluent_kafka import KafkaException, TopicPartition, OFFSET_END
 
 app = Flask(__name__)
 
@@ -89,6 +89,8 @@ def create_topic():
 
     if not name:
         return jsonify({"error": "name gerekli"}), 400
+    if int(num_partitions) < 1 or int(replication_factor) < 1:
+        return jsonify({"error": "partitions ve rf 1'den kucuk olamaz"}), 400
 
     try:
         new_topic = NewTopic(
@@ -227,13 +229,33 @@ def consumer_group_details(group_id):
                 }
             )
 
+        offsets = admin.list_consumer_group_offsets(group_id)
+        lag_info = []
+        latest_req = {}
+        for tp, off in offsets.items():
+            latest_req[TopicPartition(tp.topic, tp.partition, OFFSET_END)] = None
+
+        latest_res = admin.list_offsets(latest_req, request_timeout=5)
+        for tp, off in offsets.items():
+            latest = latest_res.get(TopicPartition(tp.topic, tp.partition))
+            latest_val = latest.offset if latest else -1
+            lag = latest_val - off.offset if off.offset >= 0 and latest_val >= 0 else -1
+            lag_info.append(
+                {
+                    "topic": tp.topic,
+                    "partition": tp.partition,
+                    "current_offset": off.offset,
+                    "log_end_offset": latest_val,
+                    "lag": lag,
+                }
+            )
+
         resp = {
             "group_id": target.id,
             "state": target.state,
             "protocol_type": target.protocol_type,
             "members": members,
-            # lag detayi icin normalde offset sorgusu gerekir,
-            # burada basit tutuyorum.
+            "partitions": lag_info,
         }
         return jsonify(resp)
     except Exception as e:
