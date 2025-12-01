@@ -6,14 +6,17 @@
 {
   "name": "http-source-1",
   "config": {
-    "connector.class": "org.apache.kafka.connect.http.HttpSourceConnector",
+    "connector.class": "io.confluent.connect.http.HttpSourceConnector",
     "tasks.max": "1",
-    "http.api.url": "http://OBS_IP:2020/topics",
-    "http.api.method": "GET",
+
+    "http.api.url": "http://OBSERVABILITY_IP:2020/topics",
+    "http.method": "GET",
     "poll.interval.ms": "5000",
+
     "kafka.topic": "topic-1",
-    "http.headers": "",
-    "http.connect.timeout.ms": "10000",
-    "http.read.timeout.ms": "10000"
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
   }
 }
