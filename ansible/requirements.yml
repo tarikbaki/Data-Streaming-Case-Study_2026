@@ -1,7 +1,14 @@
+# cp-ansible collection ve rollerini burada tanımlıyorum.
+# Kafka broker ve controller kurulumlarını bu collection üzerinden yapıyorum.
+# Versiyonu sabitleyerek reproducible kurulum sağlıyorum.
+
 collections:
   - name: confluent.platform
     version: 7.6.0
 
 roles:
+  # Kafka broker kurulumu (KRaft broker)
   - src: confluent.platform.kafka_broker
+
+  # Kafka controller kurulumu (KRaft controller)
   - src: confluent.platform.kafka_controller

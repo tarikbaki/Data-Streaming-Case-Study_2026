@@ -1,3 +1,8 @@
+# Bu playbook Kafka KRaft cluster kurulumunu yapıyor.
+# Broker ve controller rollerini cp-ansible üzerinden çağırıyorum.
+# Controller'lar yalnızca controller rolü, broker'lar yalnızca broker rolü alıyor.
+# KRaft mode için process.roles ayrımı ve quorum voters ayarı group_vars içinde.
+
 - hosts: controllers
   become: yes
   roles:

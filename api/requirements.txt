@@ -1,0 +1,5 @@
+# Flask tabanlı REST API için gerekli paketler
+flask
+
+# Kafka AdminClient işlemleri için resmi confluent paketi
+confluent-kafka

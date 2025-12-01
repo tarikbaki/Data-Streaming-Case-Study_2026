@@ -1,3 +1,7 @@
+# Kafka broker ve controller nodelarına JMX Exporter kuruyorum.
+# Prometheus'un broker/controller JMX metriklerini toplayabilmesi için gerekli.
+# Bu rol cp-ansible içindeki jmxexporter rolünü kullanıyor.
+
 - hosts: brokers,controllers
   become: yes
   roles:

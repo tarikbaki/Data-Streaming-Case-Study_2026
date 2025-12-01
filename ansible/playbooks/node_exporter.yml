@@ -1,30 +1,36 @@
+# Tüm EC2 nodelarına node_exporter kurulumunu yapıyorum.
+# Prometheus'un CPU, bellek, disk ve sistem metriklerini toplaması için gerekli.
+
 - hosts: all
   become: yes
   tasks:
-    - name: download node exporter
+    - name: node_exporter indir
       get_url:
-        url: https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz
+        url: "https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz"
         dest: /tmp/node_exporter.tar.gz
 
-    - name: extract
+    - name: node_exporter çıkart
       unarchive:
         src: /tmp/node_exporter.tar.gz
         dest: /usr/local/bin/
         remote_src: yes
 
-    - name: create service
+    - name: node_exporter servis dosyası oluştur
       copy:
         dest: /etc/systemd/system/node_exporter.service
         content: |
           [Unit]
           Description=Node Exporter
+          After=network.target
+
           [Service]
-          ExecStart=/usr/local/bin/node_exporter-1.6.0.linux-amd64/node_exporter
+          ExecStart=/usr/local/bin/node_exporter-1.6.1.linux-amd64/node_exporter
+
           [Install]
           WantedBy=multi-user.target
 
-    - name: start service
+    - name: node_exporter başlat
       systemd:
         name: node_exporter
-        state: restarted
         enabled: yes
+        state: started
