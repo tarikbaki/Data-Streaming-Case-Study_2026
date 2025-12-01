@@ -1,0 +1,25 @@
+{
+  "title": "Kafka Broker Overview",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Under Replicated Partitions",
+      "targets": [
+        {
+          "expr": "kafka_server_replicamanager_underreplicatedpartitions",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Bytes In Per Sec",
+      "targets": [
+        {
+          "expr": "kafka_server_brokertopicmetrics_bytesinpersec",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    }
+  ]
+}
