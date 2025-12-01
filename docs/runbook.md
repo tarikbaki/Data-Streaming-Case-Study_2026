@@ -116,3 +116,40 @@ Grafana baslatma:
 Alertmanager baslatma:
 ./alertmanager --config.file=alertmanager.yml
 
+### Connector yaratma
+
+curl -X POST http://CONNECT_IP:8083/connectors
+-H "Content-Type: application/json"
+-d @connect/config/http-source.json
+
+
+### Connector listeleme
+curl http://CONNECT_IP:8083/connectors
+
+
+### Connector detay
+curl http://CONNECT_IP:8083/connectors/http-source-1
+
+
+### Connector status
+curl http://CONNECT_IP:8083/connectors/http-source-1/status
+
+
+### Connector tasks
+curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
+
+### Task status
+
+curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
+
+### Task restart
+
+curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
+
+
+### Connector silme
+curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+
+
+
+
