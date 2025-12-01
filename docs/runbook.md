@@ -1,20 +1,28 @@
-# Trendyol Data Streaming Case - Runbook
+# Trendyol Data Streaming Case – Runbook
 
-Buraya case boyunca yaptığım adımları yazıyorum. karışmasın diye basit şekilde gidiyorum.
+Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
+Adımları sade ve net biçimde ilerlettim.
 
-## 1) Terraform ile altyapı
+---
 
-- vpc kurdum
-- public iki subnet açtım (1a, 1b)
-- internet gateway + route table bağladım
-- security group açtım (şimdilik her şeye izin, sonra kısıtlama bakarım)
-- compute modülünde broker, controller, connect, observability ec2’leri oluşturdum
-- outputlara public ip’leri ekledim
+## 1) Terraform ile Infrastruktur Hazırlığı
 
-komutlar:
+- VPC oluşturdum (10.20.0.0/16)
+- 3 adet public subnet açtım (eu-central-1a, 1b, 1c)
+- Internet Gateway + Route Table bağladım
+- Security Group oluşturdum (challenge için şimdilik tüm açık)
+- Compute modülü:
+  - 4 broker node
+  - 3 controller node
+  - 1 connect node
+  - 1 observability node
+- Module outputs’a gerekli IP'leri ekledim
+
+### Komutlar
+
+cd terraform/envs/prod
 terraform init
 terraform apply
-
 
 çıktıdan ip’leri aldım. inventory scriptine ekleyip ansible için hazırladım.
 
@@ -24,7 +32,6 @@ terraform apply
 - cp-ansible requirements ekledim
 - kafka broker ve controller rollerini playbook’a koydum
 - ayarları group_vars/all.yml içine yazdım
-
 
 ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
 
