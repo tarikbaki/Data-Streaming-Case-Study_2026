@@ -1,0 +1,9 @@
+- hosts: controllers
+  become: yes
+  roles:
+    - role: confluent.platform.kafka_controller
+
+- hosts: brokers
+  become: yes
+  roles:
+    - role: confluent.platform.kafka_broker

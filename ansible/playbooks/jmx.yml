@@ -1,0 +1,4 @@
+- hosts: brokers,controllers
+  become: yes
+  roles:
+    - role: confluent.platform.jmxexporter

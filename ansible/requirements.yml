@@ -1,0 +1,7 @@
+collections:
+  - name: confluent.platform
+    version: 7.6.0
+
+roles:
+  - src: confluent.platform.kafka_broker
+  - src: confluent.platform.kafka_controller

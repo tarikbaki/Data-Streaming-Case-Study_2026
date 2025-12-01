@@ -1,0 +1,60 @@
+# ==========================
+# GLOBAL SECURITY SETTINGS
+# ==========================
+
+ssl_enabled: true
+sasl_protocol: "SASL_SSL"
+sasl_mechanism: "SCRAM-SHA-512"
+
+# SASL user for brokers
+kafka_broker:
+  principal: "broker"
+  sasl_users:
+    - username: broker
+      password: brokerpass
+
+  config:
+    process.roles: "broker"
+    node.id: "{{ inventory_hostname | regex_findall('[0-9]+') | first }}"
+
+    # listeners
+    listeners: "PLAINTEXT://:9092,CONTROLLER://:9093"
+    advertised.listeners: "PLAINTEXT://{{ ansible_host }}:9092"
+    inter.broker.listener.name: "PLAINTEXT"
+    controller.listener.names: "CONTROLLER"
+
+    # KRaft quorum voters
+    controller.quorum.voters: >
+      0@controller-0:9093,
+      1@controller-1:9093,
+      2@controller-2:9093
+
+    # topic defaults
+    num.partitions: 3
+
+    # rack awareness (use AZ codes)
+    broker.rack: "{{ ansible_host | regex_replace('^.*(1a|1b|1c)$', '\\1') }}"
+
+
+# ==========================
+# CONTROLLER CONFIG
+# ==========================
+
+kafka_controller:
+  config:
+    process.roles: "controller"
+    node.id: "{{ inventory_hostname | regex_findall('[0-9]+') | first }}"
+    listeners: "CONTROLLER://:9093"
+
+    controller.quorum.voters: >
+      0@controller-0:9093,
+      1@controller-1:9093,
+      2@controller-2:9093"
+
+
+# ==========================
+# JMX EXPORTER
+# ==========================
+jmxexporter_enabled: true
+kafka_broker_jmxexporter_port: 5555
+kafka_controller_jmxexporter_port: 5556
