@@ -3,6 +3,12 @@
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
 
+## Additional Reading
+Kafka üzerine daha önce yazdığım bir giriş yazısı:
+
+👉 [What is Apache Kafka? – Beginner Friendly Overview](https://medium.com/@tarikbaki/what-is-apache-kafka-a-beginner-friendly-overview-a32a04783ee3)
+
+
       Bu çalışma, aws maliyet yaratmamak adına Terraform apply uygulanmadan hazırlanmıştır. Tüm kaynak tanımları eksiksizdir ve plan çıktısı çalışır durumdadır. Request halinde apply yapılacak altyapı hazırdır.
 ---
 ![alt text](docs/diag.png)
