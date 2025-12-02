@@ -3,9 +3,14 @@
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
 
+Bonus: ## Additional Reading
+Kafka üzerine daha önce yazdığım bir giriş yazısı:
+
+👉 [What is Apache Kafka? – Beginner Friendly Overview](https://medium.com/@tarikbaki/what-is-apache-kafka-a-beginner-friendly-overview-a32a04783ee3)
+
 ---
 
-## 1) Terraform ile Infrastruktur Hazırlığı
+## 1) Terraform ile Infra Hazırlığı
 
 - VPC oluşturdum (10.20.0.0/16)
 - 3 adet public subnet açtım (eu-central-1a, 1b, 1c)
@@ -20,9 +25,9 @@ Adımları sade ve net biçimde ilerlettim.
 
 ### Komutlar
 
-cd terraform/envs/prod
-terraform init
-terraform apply
+    cd terraform/envs/prod
+    terraform init
+    terraform apply
 
 çıktıdan ip’leri aldım. inventory scriptine ekleyip ansible için hazırladım.
 
@@ -67,8 +72,8 @@ ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
 
 calistirmak icin:
 
-docker build -t admin-api .
-docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
+    docker build -t admin-api .
+    docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
 
 ## 7) Kafka Connect
 
@@ -83,16 +88,21 @@ http://CONNECT_IP:8083/connectors
 
 
 durum:
-curl http://CONNECT_IP:8083/connectors/http-source-1/status
-
+    ```bash
+  curl http://CONNECT_IP:8083/connectors/http-source-1/status
+    ```
 
 listeleme:
+      ```bash
 curl http://CONNECT_IP:8083/connectors
+    ```
 
 
 silme:
+    ```bash
 curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
-
+    ```
+    
 ## 8) Observability (Prometheus + Alertmanager + Grafana)
 
 - observability ec2 uzerinde prometheus, alertmanager ve grafana calistiriyorum
@@ -109,73 +119,87 @@ Prometheus baslatma:
 
 
 Grafana baslatma:
+    ```bash
 ./grafana-server
-
-
+    ```
+    
 Alertmanager baslatma:
+    ```bash
 ./alertmanager --config.file=alertmanager.yml
-
+    ```
+    
 ### Connector yaratma
 
+    ```
 curl -X POST http://CONNECT_IP:8083/connectors
 -H "Content-Type: application/json"
 -d @connect/config/http-source.json
-
+    ```
 
 ### Connector listeleme
-curl http://CONNECT_IP:8083/connectors
+    ```bash 
+curl http://CONNECT_IP:8083/connectors 
+       ```
 
 
 ### Connector detay
-curl http://CONNECT_IP:8083/connectors/http-source-1
 
+```curl http://CONNECT_IP:8083/connectors/http-source-1
+```
 
 ### Connector status
-curl http://CONNECT_IP:8083/connectors/http-source-1/status
-
+```curl http://CONNECT_IP:8083/connectors/http-source-1/status
+```
 
 ### Connector tasks
 curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
 
 ### Task status
 
-curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
-
+```curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
+```
 ### Task restart
-
+```
 curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
-
+```
 
 ### Connector silme
-curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+```curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+```
 
 ### Bootstrap server ip’yi compose icine ekleme
 
 terraform output:
+```
 terraform -chdir=terraform/envs/prod output broker_ips
 
 ilk broker ip’sini alıyorum, ör:
 1.2.3.4
-
+```
 docker-compose.yml içinde:
-CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
-
+```CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
+```
 ## 9) Sertifika + keystore
 - ansible/playbooks/certs.yml self-signed keystore/truststore oluşturuyor, demo için yeter.
 - Gerçekte CA/vault ile değiştirilmeli, parolalar vault’a taşınmalı.
 
 ## 10) Hızlı test
 - Admin API:
+- ```
   - curl -X POST localhost:2020/topics -H "Content-Type: application/json" -d '{"name":"topic-1","num_partitions":3,"replication_factor":3}'
   - curl localhost:2020/brokers
   - curl localhost:2020/topics
   - curl localhost:2020/topics/topic-1
+  ```
 - Connect:
+- ```
   - cd connect/docker && ./plugins/fetch_http_source.sh (internet lazım)
   - docker-compose up -d
   - curl -X POST -H "Content-Type: application/json" --data @../config/http-source.json http://CONNECT_IP:8083/connectors
   - curl http://CONNECT_IP:8083/connectors/http-source-1/status
+  ```
 - Prometheus:
+- ```
   - scripts/update_prometheus_targets.sh
   - prometheus.yml job’ları doldurur, sonra prometheus’u başlat
-
+```
