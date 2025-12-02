@@ -23,9 +23,9 @@ Adımları sade ve net biçimde ilerlettim.
 
 ### Komutlar
 
-cd terraform/envs/prod
-terraform init
-terraform apply
+      cd terraform/envs/prod
+      terraform init
+      terraform apply
 
 çıktıdan ip’leri aldım. inventory scriptine ekleyip ansible için hazırladım.
 
@@ -70,8 +70,8 @@ ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
 
 calistirmak icin:
 
-docker build -t admin-api .
-docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
+      docker build -t admin-api .
+      docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
 
 ## 7) Kafka Connect
 
@@ -88,21 +88,21 @@ connector yaratma:
 - connector config dosyasini ekledim (connect/config/http-source.json)
 
 connector yaratma:
-curl -X POST -H "Content-Type: application/json"
---data @connect/config/http-source.json
-http://CONNECT_IP:8083/connectors
+      curl -X POST -H "Content-Type: application/json"
+      --data @connect/config/http-source.json
+      http://CONNECT_IP:8083/connectors
 
 
 durum:
-curl http://CONNECT_IP:8083/connectors/http-source-1/status
+      curl http://CONNECT_IP:8083/connectors/http-source-1/status
 
 
 listeleme:
-curl http://CONNECT_IP:8083/connectors
+      curl http://CONNECT_IP:8083/connectors
 
 
 silme:
-curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+      curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 
 ## 8) Observability (Prometheus + Alertmanager + Grafana)
 
@@ -116,15 +116,15 @@ scripts/update_prometheus_targets.sh
       - connect icin de jmx portu expose edecegim
 
 Prometheus baslatma:
-      ./prometheus --config.file=prometheus.yml
+            ./prometheus --config.file=prometheus.yml
 
 
 Grafana baslatma:
-      ./grafana-server
+            ./grafana-server
 
 
 Alertmanager baslatma:
-      ./alertmanager --config.file=alertmanager.yml
+            ./alertmanager --config.file=alertmanager.yml
 
 ### Connector yaratma
 
