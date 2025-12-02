@@ -1,4 +1,4 @@
-# Trendyol Data Streaming Case – Runbook
+# Trendyol Data Streaming Case – ReadME
 
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
