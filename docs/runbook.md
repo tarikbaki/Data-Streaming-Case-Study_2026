@@ -88,18 +88,18 @@ http://CONNECT_IP:8083/connectors
 
 
 durum:
-    ```bash
+    ```
   curl http://CONNECT_IP:8083/connectors/http-source-1/status
     ```
 
 listeleme:
-      ```bash
+      ```
 curl http://CONNECT_IP:8083/connectors
     ```
 
 
 silme:
-    ```bash
+    ```
 curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
     ```
     
@@ -141,17 +141,17 @@ curl -X POST http://CONNECT_IP:8083/connectors
 ### Connector listeleme
 ```  
 curl http://CONNECT_IP:8083/connectors 
-       ```
+```
 
 
 ### Connector detay
-
 ```
 curl http://CONNECT_IP:8083/connectors/http-source-1
 ```
 
 ### Connector status
-```curl http://CONNECT_IP:8083/connectors/http-source-1/status
+```
+curl http://CONNECT_IP:8083/connectors/http-source-1/status
 ```
 
 ### Connector tasks
@@ -164,6 +164,7 @@ curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
 ```
 curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
 ```
+
 ### Task restart
 ```
 curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
