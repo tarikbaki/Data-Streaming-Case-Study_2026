@@ -23,9 +23,9 @@ Adımları sade ve net biçimde ilerlettim.
 
 ### Komutlar
 
-cd terraform/envs/prod
-terraform init
-terraform apply
+      cd terraform/envs/prod
+      terraform init
+      terraform apply
 
 çıktıdan ip’leri aldım. inventory scriptine ekleyip ansible için hazırladım.
 
@@ -74,8 +74,8 @@ ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
 
 calistirmak icin:
 
-docker build -t admin-api .
-docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
+      docker build -t admin-api .
+      docker run -p 2020:2020 -e KAFKA_BOOTSTRAP_SERVERS="IP:9092" admin-api
 
 ## 7) Kafka Connect
 
@@ -92,21 +92,21 @@ connector yaratma:
 - connector config dosyasini ekledim (connect/config/http-source.json)
 
 connector yaratma:
-curl -X POST -H "Content-Type: application/json"
---data @connect/config/http-source.json
-http://CONNECT_IP:8083/connectors
+      curl -X POST -H "Content-Type: application/json"
+      --data @connect/config/http-source.json
+      http://CONNECT_IP:8083/connectors
 
 
 durum:
-curl http://CONNECT_IP:8083/connectors/http-source-1/status
+      curl http://CONNECT_IP:8083/connectors/http-source-1/status
 
 
 listeleme:
-curl http://CONNECT_IP:8083/connectors
+      curl http://CONNECT_IP:8083/connectors
 
 
 silme:
-curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+      curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 
 ## 8) Observability (Prometheus + Alertmanager + Grafana)
 
@@ -115,65 +115,65 @@ curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 - terraform outputlarindan ip'leri alip prometheus dosyasina target olarak yazan script yazdim:
 
 scripts/update_prometheus_targets.sh
-- node exporter butun ec2'lerde systemd servisi olarak calisacak
-- kafka broker ve controller icin jmx exporter portlarini ansible ile acacagim
-- connect icin de jmx portu expose edecegim
+      - node exporter butun ec2'lerde systemd servisi olarak calisacak
+      - kafka broker ve controller icin jmx exporter portlarini ansible ile acacagim
+      - connect icin de jmx portu expose edecegim
 
 Prometheus baslatma:
-./prometheus --config.file=prometheus.yml
+            ./prometheus --config.file=prometheus.yml
 
 
 Grafana baslatma:
-./grafana-server
+            ./grafana-server
 
 
 Alertmanager baslatma:
-./alertmanager --config.file=alertmanager.yml
+            ./alertmanager --config.file=alertmanager.yml
 
 ### Connector yaratma
 
-curl -X POST http://CONNECT_IP:8083/connectors
--H "Content-Type: application/json"
--d @connect/config/http-source.json
+      curl -X POST http://CONNECT_IP:8083/connectors
+      -H "Content-Type: application/json"
+      -d @connect/config/http-source.json
 
 
 ### Connector listeleme
-curl http://CONNECT_IP:8083/connectors
+      curl http://CONNECT_IP:8083/connectors
 
 
 ### Connector detay
-curl http://CONNECT_IP:8083/connectors/http-source-1
+      curl http://CONNECT_IP:8083/connectors/http-source-1
 
 
 ### Connector status
-curl http://CONNECT_IP:8083/connectors/http-source-1/status
+      curl http://CONNECT_IP:8083/connectors/http-source-1/status
 
 
 ### Connector tasks
-curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
+      curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
 
 ### Task status
 
-curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
+      curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
 
 ### Task restart
 
-curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
+      curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
 
 
 ### Connector silme
-curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+      curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 
 ### Bootstrap server ip’yi compose icine ekleme
 
-terraform output:
-terraform -chdir=terraform/envs/prod output broker_ips
+      terraform output:
+      terraform -chdir=terraform/envs/prod output broker_ips
 
 ilk broker ip’sini alıyorum, ör:
-1.2.3.4
+      1.2.3.4
 
 docker-compose.yml içinde:
-CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
+      CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
 
 ### Hızlı test notları
 - Admin API:
