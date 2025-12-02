@@ -2,15 +2,25 @@
 # VPC + subnet + SG ardından compute kaynaklarını tek dosyada bağlıyorum.
 
 provider "aws" {
-  region = "eu-central-1"
+  # Ödev sırasında gerçek kimlik bilgisi vermemek için dummy credential verdim.
+  # Gerçekte bu bloktaki access/secret/profile ayarlarını kaldırıp gerçek kimlik bilgisi kullanılacak
+  region                      = "eu-central-1"
+  access_key                  = "dummy"
+  secret_key                  = "dummy"
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
 }
 
+# S3 backend kimlik bilgisi gerektirdiği için ödev süresince local state kullanıyorum.
+# Gerçek ortamda aşağıdaki local backend'i s3 ile değiştir.
 terraform {
-  backend "s3" {
-    bucket = "trendyol-data-streaming-tfstate"
-    key    = "envs/prod/terraform.tfstate"
-    region = "eu-central-1"
-  }
+  # backend "s3" {
+  #   bucket = "trendyol-data-streaming-tfstate"
+  #   key    = "envs/prod/terraform.tfstate"
+  #   region = "eu-central-1"
+  # }
+  backend "local" {}
 }
 
 locals {

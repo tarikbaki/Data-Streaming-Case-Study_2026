@@ -1,13 +1,5 @@
 # Bu compute modülünde broker, controller, connect ve observability için EC2'leri oluşturuyorum.
-# Subnet, SG, key gibi parametreleri dışarıdan alıyorum.
-
-
-variable "project_name" { type = string }
-variable "vpc_id"        { type = string }
-variable "subnets"       { type = list(string) }
-variable "sg_id"         { type = string }
-variable "key_name"      { type = string }
-variable "user_data"     { type = string }
+# Parametre tanımları variables.tf içinde.
 
 resource "aws_instance" "broker" {
   count         = 4
