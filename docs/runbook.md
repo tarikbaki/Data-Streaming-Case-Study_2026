@@ -160,4 +160,22 @@ ilk broker ip’sini alıyorum, ör:
 docker-compose.yml içinde:
 CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
 
+## 9) Sertifika + keystore
+- ansible/playbooks/certs.yml self-signed keystore/truststore oluşturuyor, demo için yeter.
+- Gerçekte CA/vault ile değiştirilmeli, parolalar vault’a taşınmalı.
+
+## 10) Hızlı test
+- Admin API:
+  - curl -X POST localhost:2020/topics -H "Content-Type: application/json" -d '{"name":"topic-1","num_partitions":3,"replication_factor":3}'
+  - curl localhost:2020/brokers
+  - curl localhost:2020/topics
+  - curl localhost:2020/topics/topic-1
+- Connect:
+  - cd connect/docker && ./plugins/fetch_http_source.sh (internet lazım)
+  - docker-compose up -d
+  - curl -X POST -H "Content-Type: application/json" --data @../config/http-source.json http://CONNECT_IP:8083/connectors
+  - curl http://CONNECT_IP:8083/connectors/http-source-1/status
+- Prometheus:
+  - scripts/update_prometheus_targets.sh
+  - prometheus.yml job’ları doldurur, sonra prometheus’u başlat
 

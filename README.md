@@ -29,6 +29,8 @@ terraform apply
 
 çıktıdan ip’leri aldım. inventory scriptine ekleyip ansible için hazırladım.
 
+> Not: SG artık sadece gereken portları açıyor (22, 9092/9093, 9100, 5555/5556, 7777/7778, 8083/8084, 2020). Key olarak `challenge-key` bekliyor, user-data basit apt update yapıyor. Backend S3 tanımlı.
+
 ## 2) Ansible ile Kafka kurulumu (cp-ansible)
 
 - inventory dosyasını terraform output ile doldurmak için script yazdım
@@ -37,6 +39,8 @@ terraform apply
 - ayarları group_vars/all.yml içine yazdım
 
 ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/kafka.yml
+
+> Not: `ansible/playbooks/certs.yml` self-signed keystore/truststore üretiyor (demo). Gerçekte CA/vault ile değiştirmek lazım. Rack bilgisi inventory’den geliyor.
 
 ## 3) Observability
 
@@ -171,3 +175,16 @@ ilk broker ip’sini alıyorum, ör:
 docker-compose.yml içinde:
 CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
 
+### Hızlı test notları
+- Admin API:
+  - `curl -X POST localhost:2020/topics -H "Content-Type: application/json" -d '{"name":"topic-1","num_partitions":3,"replication_factor":3}'`
+  - `curl localhost:2020/brokers`, `curl localhost:2020/topics`, `curl localhost:2020/topics/topic-1`
+  - `curl localhost:2020/consumer-groups`, `curl localhost:2020/consumer-groups/<group>`
+- Connect:
+  - `cd connect/docker && ./plugins/fetch_http_source.sh` (internet gerekir)
+  - `docker-compose up -d`
+  - `curl -X POST -H "Content-Type: application/json" --data @../config/http-source.json http://CONNECT_IP:8083/connectors`
+  - `curl http://CONNECT_IP:8083/connectors/http-source-1/status`
+- Prometheus targetlarını doldurmak:
+  - `./scripts/update_prometheus_targets.sh` (Python kullanıyor, sed farkı yok)
+  - `observability/prometheus/prometheus.yml` içinde job’lar otomatik yazılır

@@ -5,6 +5,14 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "trendyol-data-streaming-tfstate"
+    key    = "envs/prod/terraform.tfstate"
+    region = "eu-central-1"
+  }
+}
+
 locals {
   project_name = "trendyol-data-streaming"
 }
@@ -26,6 +34,8 @@ module "compute" {
   vpc_id       = module.network.vpc_id
   subnets      = module.network.subnets
   sg_id        = module.security.sg_id
+  key_name     = "challenge-key"
+  user_data    = file("${path.module}/user_data.sh")
 }
 
 output "broker_ips" {

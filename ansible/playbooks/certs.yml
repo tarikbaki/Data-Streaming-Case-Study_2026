@@ -1,0 +1,40 @@
+# Bu playbook self-signed keystore/truststore üretip ilgili dizine koyuyor.
+# Prod için gerçek CA/vault kullanılmalı, burada demo yeterli.
+
+- hosts: brokers,controllers,connect
+  become: yes
+  tasks:
+    - name: gerekli klasorleri ac
+      file:
+        path: /etc/kafka/secrets
+        state: directory
+        owner: root
+        mode: "0750"
+
+    - name: self-signed keystore olustur
+      command: >
+        keytool -genkeypair -alias kafka -keyalg RSA -storetype pkcs12
+        -keystore /etc/kafka/secrets/kafka.keystore.jks
+        -storepass {{ ssl_keystore_password }}
+        -keypass {{ ssl_key_password }}
+        -validity 365
+        -dname "CN={{ inventory_hostname }}"
+      args:
+        creates: /etc/kafka/secrets/kafka.keystore.jks
+
+    - name: truststore olustur
+      command: >
+        keytool -importkeystore
+        -srckeystore /etc/kafka/secrets/kafka.keystore.jks
+        -srcstorepass {{ ssl_keystore_password }}
+        -destkeystore /etc/kafka/secrets/kafka.truststore.jks
+        -deststorepass {{ ssl_truststore_password }}
+        -noprompt
+      args:
+        creates: /etc/kafka/secrets/kafka.truststore.jks
+
+    - name: dosya izinlerini daralt
+      file:
+        path: /etc/kafka/secrets
+        state: directory
+        mode: "0750"

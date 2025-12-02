@@ -9,6 +9,9 @@ set -e
 echo "[INFO] Updating inventory from Terraform outputs..."
 ../scripts/update_inventory.sh
 
+echo "[INFO] Generating TLS keystore/truststore (demo self-signed)..."
+ansible-playbook -i inventory/hosts.ini playbooks/certs.yml
+
 echo "[INFO] Running Kafka cluster provisioning..."
 ansible-playbook -i inventory/hosts.ini playbooks/kafka.yml
 
