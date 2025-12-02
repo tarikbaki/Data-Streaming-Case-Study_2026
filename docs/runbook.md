@@ -115,8 +115,9 @@ scripts/update_prometheus_targets.sh
 - connect icin de jmx portu expose edecegim
 
 Prometheus baslatma:
+```
 ./prometheus --config.file=prometheus.yml
-
+```
 
 Grafana baslatma:
     ```bash
@@ -130,21 +131,23 @@ Alertmanager baslatma:
     
 ### Connector yaratma
 
-    ```
+```
 curl -X POST http://CONNECT_IP:8083/connectors
 -H "Content-Type: application/json"
 -d @connect/config/http-source.json
+```
     ```
 
 ### Connector listeleme
-    ```bash 
+```  
 curl http://CONNECT_IP:8083/connectors 
        ```
 
 
 ### Connector detay
 
-```curl http://CONNECT_IP:8083/connectors/http-source-1
+```
+curl http://CONNECT_IP:8083/connectors/http-source-1
 ```
 
 ### Connector status
@@ -152,11 +155,14 @@ curl http://CONNECT_IP:8083/connectors
 ```
 
 ### Connector tasks
+```
 curl http://CONNECT_IP:8083/connectors/http-source-1/tasks
+```
 
 ### Task status
 
-```curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
+```
+curl http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/status
 ```
 ### Task restart
 ```
@@ -164,7 +170,8 @@ curl -X POST http://CONNECT_IP:8083/connectors/http-source-1/tasks/0/restart
 ```
 
 ### Connector silme
-```curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
+```
+curl -X DELETE http://CONNECT_IP:8083/connectors/http-source-1
 ```
 
 ### Bootstrap server ip’yi compose icine ekleme
@@ -177,7 +184,8 @@ ilk broker ip’sini alıyorum, ör:
 1.2.3.4
 ```
 docker-compose.yml içinde:
-```CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
+```
+CONNECT_BOOTSTRAP_SERVERS="PLAINTEXT://1.2.3.4:9092"
 ```
 ## 9) Sertifika + keystore
 - ansible/playbooks/certs.yml self-signed keystore/truststore oluşturuyor, demo için yeter.
