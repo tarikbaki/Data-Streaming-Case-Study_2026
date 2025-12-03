@@ -1,0 +1,45 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "${box}"
+  config.vm.box_check_update = false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  %{ for i, ip in broker_ips ~}
+  config.vm.define "broker-${i}" do |node|
+    node.vm.hostname = "broker-${i}"
+    node.vm.network "private_network", ip: "${ip}"
+    node.vm.provider "virtualbox" do |vb|
+      vb.memory = ${broker_memory_mb}
+      vb.cpus = ${broker_cpus}
+    end
+  end
+  %{ endfor ~}
+
+  %{ for i, ip in controller_ips ~}
+  config.vm.define "controller-${i}" do |node|
+    node.vm.hostname = "controller-${i}"
+    node.vm.network "private_network", ip: "${ip}"
+    node.vm.provider "virtualbox" do |vb|
+      vb.memory = ${controller_memory_mb}
+      vb.cpus = ${controller_cpus}
+    end
+  end
+  %{ endfor ~}
+
+  config.vm.define "connect" do |node|
+    node.vm.hostname = "connect"
+    node.vm.network "private_network", ip: "${connect_ip}"
+    node.vm.provider "virtualbox" do |vb|
+      vb.memory = ${connect_memory_mb}
+      vb.cpus = ${connect_cpus}
+    end
+  end
+
+  config.vm.define "observability" do |node|
+    node.vm.hostname = "observability"
+    node.vm.network "private_network", ip: "${observability_ip}"
+    node.vm.provider "virtualbox" do |vb|
+      vb.memory = ${observability_memory_mb}
+      vb.cpus = ${observability_cpus}
+    end
+  end
+end

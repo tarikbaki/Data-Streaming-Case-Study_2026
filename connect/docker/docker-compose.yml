@@ -23,7 +23,7 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-1"
       CONNECT_PLUGIN_PATH: "/usr/share/java"
       CONNECT_JMX_PORT: "7777"
-      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
+      KAFKA_OPTS: "-javaagent:/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=7777:/jmx-exporter/connect.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
       CONNECT_SECURITY_PROTOCOL: "SASL_SSL"
       CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
@@ -32,6 +32,7 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
     volumes:
       - ./plugins:/usr/share/java
+      - ./jmx-exporter:/jmx-exporter:ro
 
   connect2:
     image: confluentinc/cp-kafka-connect:7.6.0
@@ -46,7 +47,7 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-2"
       CONNECT_PLUGIN_PATH: "/usr/share/java"
       CONNECT_JMX_PORT: "7777"
-      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
+      KAFKA_OPTS: "-javaagent:/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=7777:/jmx-exporter/connect.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
       CONNECT_SECURITY_PROTOCOL: "SASL_SSL"
       CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
@@ -55,3 +56,4 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
     volumes:
       - ./plugins:/usr/share/java
+      - ./jmx-exporter:/jmx-exporter:ro

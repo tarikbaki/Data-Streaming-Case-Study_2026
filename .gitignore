@@ -2,9 +2,12 @@
 # Terraform
 # ===========================
 .terraform/
+terraform/envs/vagrant/.terraform/
 *.tfstate
 *.tfstate.*
 .terraform.tfstate.lock.info
+*.tfplan
+tfplan
 
 # tfvars dosyaları (şifre içerir)
 *.tfvars
@@ -49,6 +52,17 @@ env/
 # docker build outputs
 *.tar
 *.log
+connect/docker/jmx-exporter/jmx_prometheus_javaagent-*.jar
+
+
+# ===========================
+# Vagrant / local VM
+# ===========================
+.vagrant/
+terraform/envs/vagrant/Vagrantfile
+terraform/envs/vagrant/.vagrant/
+terraform/envs/vagrant/.vagrant.d/
+*.box
 
 
 # ===========================

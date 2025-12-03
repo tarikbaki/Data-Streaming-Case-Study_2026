@@ -1,0 +1,100 @@
+# Observability VM uzerine Prometheus + rule dosyalarını indirip systemd servisi olarak ayağa kaldırıyorum.
+
+- hosts: observability
+  become: yes
+  vars:
+    prometheus_version: "2.53.0"
+    prom_install_dir: /opt/prometheus
+    prom_etc_dir: /etc/prometheus
+    prom_data_dir: /var/lib/prometheus
+    prom_user: prometheus
+    prom_group: prometheus
+    prom_tar: "prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    prom_url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/{{ prom_tar }}"
+    prom_extract_dir: "{{ prom_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64"
+  tasks:
+    - name: Prometheus kullanicisi olustur
+      ansible.builtin.user:
+        name: "{{ prom_user }}"
+        system: yes
+        shell: /usr/sbin/nologin
+
+    - name: Prometheus dizinlerini olustur
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ prom_user }}"
+        group: "{{ prom_group }}"
+        mode: "0755"
+      loop:
+        - "{{ prom_install_dir }}"
+        - "{{ prom_etc_dir }}"
+        - "{{ prom_data_dir }}"
+
+    - name: Prometheus tarball indir
+      ansible.builtin.get_url:
+        url: "{{ prom_url }}"
+        dest: "/tmp/{{ prom_tar }}"
+        mode: "0644"
+      register: prom_tarball
+
+    - name: Prometheus arsivini ac
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ prom_tar }}"
+        dest: "{{ prom_install_dir }}"
+        remote_src: yes
+        creates: "{{ prom_extract_dir }}"
+
+    - name: Prometheus binary'lerini kopyala
+      ansible.builtin.copy:
+        remote_src: yes
+        src: "{{ prom_extract_dir }}/{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+        owner: "{{ prom_user }}"
+        group: "{{ prom_group }}"
+        mode: "0755"
+      loop:
+        - prometheus
+        - promtool
+
+    - name: Prometheus config dosyalarını push et
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../observability/prometheus/{{ item.src }}"
+        dest: "{{ prom_etc_dir }}/{{ item.dest }}"
+        owner: "{{ prom_user }}"
+        group: "{{ prom_group }}"
+        mode: "0644"
+      loop:
+        - { src: "prometheus.yml", dest: "prometheus.yml" }
+        - { src: "alerts.yaml", dest: "alerts.yml" }
+
+    - name: Prometheus systemd servisi
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/prometheus.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Prometheus
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User={{ prom_user }}
+          Group={{ prom_group }}
+          Type=simple
+          ExecStart=/usr/local/bin/prometheus \
+            --config.file={{ prom_etc_dir }}/prometheus.yml \
+            --storage.tsdb.path={{ prom_data_dir }} \
+            --web.console.templates={{ prom_extract_dir }}/consoles \
+            --web.console.libraries={{ prom_extract_dir }}/console_libraries
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Prometheus servisini baslat
+      ansible.builtin.systemd:
+        name: prometheus
+        daemon_reload: yes
+        enabled: yes
+        state: started

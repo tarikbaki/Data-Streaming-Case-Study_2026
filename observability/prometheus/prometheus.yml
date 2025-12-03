@@ -1,8 +1,4 @@
 # Bu dosyada Prometheus'un tüm scrape ayarlarını tutuyorum.
-# Target listelerini elle yazmak yerine, Terraform output'lardan
-# otomatik dolduran bir script kullanıyorum.
-# Aşağıdaki AUTO-START/END bloklarını script dolduruyor.
-
 
 global:
   scrape_interval: 5s
@@ -11,39 +7,36 @@ rule_files:
   - "alerts.yml"
 
 scrape_configs:
-
-  # =======================
-  # Node Exporter
-  # =======================
-  # AUTO-NODE-EXPORTER-START
   - job_name: "node_exporter"
     static_configs:
-      - targets: []
-  # AUTO-NODE-EXPORTER-END
+      - targets:
+      - "192.168.56.10:9100"
+      - "192.168.56.11:9100"
+      - "192.168.56.12:9100"
+      - "192.168.56.13:9100"
+      - "192.168.56.30:9100"
+      - "192.168.56.31:9100"
+      - "192.168.56.32:9100"
+      - "192.168.56.50:9100"
+      - "192.168.56.60:9100"
 
-  # =======================
-  # Kafka Broker JMX
-  # =======================
-  # AUTO-BROKER-JMX-START
   - job_name: "kafka_broker_jmx"
     static_configs:
-      - targets: []
-  # AUTO-BROKER-JMX-END
+      - targets:
+      - "192.168.56.10:5555"
+      - "192.168.56.11:5555"
+      - "192.168.56.12:5555"
+      - "192.168.56.13:5555"
 
-  # =======================
-  # Kafka Controller JMX
-  # =======================
-  # AUTO-CONTROLLER-JMX-START
   - job_name: "kafka_controller_jmx"
     static_configs:
-      - targets: []
-  # AUTO-CONTROLLER-JMX-END
+      - targets:
+      - "192.168.56.30:5556"
+      - "192.168.56.31:5556"
+      - "192.168.56.32:5556"
 
-  # =======================
-  # Kafka Connect JMX
-  # =======================
-  # AUTO-CONNECT-JMX-START
   - job_name: "connect_jmx"
     static_configs:
-      - targets: []
-  # AUTO-CONNECT-JMX-END
+      - targets:
+      - "192.168.56.50:7777"
+      - "192.168.56.50:7778"
