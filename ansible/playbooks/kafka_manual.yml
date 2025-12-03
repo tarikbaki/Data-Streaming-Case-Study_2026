@@ -9,21 +9,16 @@
     kafka_data_dir: /var/lib/kafka/data
     kafka_user: kafka
     kafka_group: kafka
-    kafka_cluster_id: "{{ hostvars['localhost'].kafka_cluster_id }}"
+    kafka_cluster_id: "pXKraftClusterId000001"
     controller_quorum: "0@controller-0:9093,1@controller-1:9093,2@controller-2:9093"
-  pre_tasks:
-    - name: Generate cluster id once
-      delegate_to: localhost
-      run_once: true
-      set_fact:
-        kafka_cluster_id: "{{ lookup('pipe','python3 - <<\"PY\"\\nimport base64,uuid\\nprint(base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b\"=\").decode())\\nPY') }}"
-
-    - name: Propagate cluster id to all hosts
-      set_fact:
-        kafka_cluster_id: "{{ hostvars['localhost'].kafka_cluster_id }}"
 
   tasks:
-    - name: Ensure kafka user and group exist
+    - name: Ensure kafka group exists
+      group:
+        name: "{{ kafka_group }}"
+        system: yes
+
+    - name: Ensure kafka user exists
       user:
         name: "{{ kafka_user }}"
         group: "{{ kafka_group }}"
