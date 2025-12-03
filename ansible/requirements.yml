@@ -4,7 +4,7 @@
 
 collections:
   - name: confluent.platform
-    version: 7.6.0
+    version: 7.5.0
 
 roles:
   # Kafka broker kurulumu (KRaft broker)
