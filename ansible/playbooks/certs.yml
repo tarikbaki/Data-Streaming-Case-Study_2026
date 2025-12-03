@@ -3,7 +3,16 @@
 
 - hosts: brokers,controllers,connect
   become: yes
+  vars_files:
+    - ../group_vars/all.yml
   tasks:
+    - name: java/keytool icin jre kur
+      apt:
+        name: default-jre-headless
+        state: present
+        update_cache: yes
+      register: jre_install
+
     - name: gerekli klasorleri ac
       file:
         path: /etc/kafka/secrets

@@ -9,7 +9,7 @@ terraform/envs/vagrant/.terraform/
 *.tfplan
 tfplan
 
-# tfvars dosyaları (şifre içerir)
+# tfvars dosyaları
 *.tfvars
 *.tfvars.json
 

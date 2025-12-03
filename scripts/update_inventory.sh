@@ -22,6 +22,8 @@ BROKERS=$(terraform -chdir="$TF_DIR" output -json broker_ips | jq -r '.[]')
 CONTROLLERS=$(terraform -chdir="$TF_DIR" output -json controller_ips | jq -r '.[]')
 CONNECT=$(terraform -chdir="$TF_DIR" output -raw connect_ip)
 OBS=$(terraform -chdir="$TF_DIR" output -raw obs_ip)
+KEY_BASE="$TF_DIR/.vagrant/machines"
+SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 # hosts.ini dosyasını tamamen sıfırdan oluşturuyorum
 cat <<EOF > "$INV_FILE"
@@ -32,7 +34,8 @@ i=0
 for ip in $BROKERS; do
   az="vgt-a"
   if [ $((i % 2)) -eq 1 ]; then az="vgt-b"; fi
-  echo "broker-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key" >> "$INV_FILE"
+  key_path="$KEY_BASE/broker-$i/virtualbox/private_key"
+  echo "broker-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=$key_path ansible_ssh_common_args='$SSH_ARGS'" >> "$INV_FILE"
   i=$((i+1))
 done
 
@@ -46,17 +49,27 @@ for ip in $CONTROLLERS; do
   az="vgt-a"
   if [ $i -eq 1 ]; then az="vgt-b"; fi
   if [ $i -eq 2 ]; then az="vgt-c"; fi
-  echo "controller-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key" >> "$INV_FILE"
+  key_path="$KEY_BASE/controller-$i/virtualbox/private_key"
+  echo "controller-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=$key_path ansible_ssh_common_args='$SSH_ARGS'" >> "$INV_FILE"
   i=$((i+1))
 done
 
 cat <<EOF >> "$INV_FILE"
 
 [connect]
-connect ansible_host=$CONNECT ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+connect ansible_host=$CONNECT ansible_user=vagrant ansible_ssh_private_key_file=$KEY_BASE/connect/virtualbox/private_key ansible_ssh_common_args='$SSH_ARGS'
 
 [observability]
-observability ansible_host=$OBS ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+observability ansible_host=$OBS ansible_user=vagrant ansible_ssh_private_key_file=$KEY_BASE/observability/virtualbox/private_key ansible_ssh_common_args='$SSH_ARGS'
+
+[kafka_broker:children]
+brokers
+
+[kafka_controller:children]
+controllers
+
+[kafka_connect:children]
+connect
 EOF
 
 echo "Inventory güncellendi: $INV_FILE (TF_DIR=$TF_DIR)"

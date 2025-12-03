@@ -1,0 +1,136 @@
+- hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    kafka_version: "3.7.1"
+    kafka_tgz: "kafka_2.13-{{ kafka_version }}.tgz"
+    kafka_url: "https://downloads.apache.org/kafka/{{ kafka_version }}/{{ kafka_tgz }}"
+    kafka_install_dir: /opt/kafka
+    kafka_data_dir: /var/lib/kafka/data
+    kafka_user: kafka
+    kafka_group: kafka
+    kafka_cluster_id: "{{ hostvars['localhost'].kafka_cluster_id }}"
+    controller_quorum: "0@controller-0:9093,1@controller-1:9093,2@controller-2:9093"
+  pre_tasks:
+    - name: Generate cluster id once
+      delegate_to: localhost
+      run_once: true
+      set_fact:
+        kafka_cluster_id: "{{ lookup('pipe','python3 - <<\"PY\"\\nimport base64,uuid\\nprint(base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b\"=\").decode())\\nPY') }}"
+
+    - name: Propagate cluster id to all hosts
+      set_fact:
+        kafka_cluster_id: "{{ hostvars['localhost'].kafka_cluster_id }}"
+
+  tasks:
+    - name: Ensure kafka user and group exist
+      user:
+        name: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        system: yes
+        create_home: no
+      loop_control:
+        label: "{{ kafka_user }}"
+
+    - name: Download Kafka tgz
+      get_url:
+        url: "{{ kafka_url }}"
+        dest: "/tmp/{{ kafka_tgz }}"
+        mode: "0644"
+
+    - name: Create install dir
+      file:
+        path: "{{ kafka_install_dir }}"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: "0755"
+
+    - name: Extract Kafka
+      unarchive:
+        src: "/tmp/{{ kafka_tgz }}"
+        dest: "{{ kafka_install_dir }}"
+        remote_src: yes
+        creates: "{{ kafka_install_dir }}/kafka_2.13-{{ kafka_version }}"
+
+    - name: Symlink current
+      file:
+        src: "{{ kafka_install_dir }}/kafka_2.13-{{ kafka_version }}"
+        dest: "{{ kafka_install_dir }}/current"
+        state: link
+        force: yes
+
+    - name: Create data dir
+      file:
+        path: "{{ kafka_data_dir }}"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: "0750"
+
+    - name: Create config dir
+      file:
+        path: /etc/kafka
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: "0755"
+
+    - name: Render server.properties
+      copy:
+        dest: /etc/kafka/server.properties
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: "0644"
+        content: |
+          process.roles={{ 'controller' if inventory_hostname in groups['controllers'] else 'broker' }}
+          node.id={{ inventory_hostname | regex_findall('[0-9]+') | first | int }}
+          controller.listener.names=CONTROLLER
+          listeners={{ 'CONTROLLER://:9093' if inventory_hostname in groups['controllers'] else 'PLAINTEXT://:9092,CONTROLLER://:9093' }}
+          advertised.listeners={{ 'CONTROLLER://'+inventory_hostname+':9093' if inventory_hostname in groups['controllers'] else 'PLAINTEXT://'+ansible_host+':9092' }}
+          inter.broker.listener.name=PLAINTEXT
+          controller.quorum.voters={{ controller_quorum }}
+          log.dirs={{ kafka_data_dir }}
+          num.partitions=3
+          offsets.topic.replication.factor=3
+          transaction.state.log.replication.factor=3
+          transaction.state.log.min.isr=2
+          group.initial.rebalance.delay.ms=0
+          auto.create.topics.enable=false
+          min.insync.replicas=2
+
+    - name: Format storage if needed
+      command: "{{ kafka_install_dir }}/current/bin/kafka-storage.sh format --config /etc/kafka/server.properties --cluster-id {{ kafka_cluster_id }} --ignore-formatted"
+      args:
+        creates: "{{ kafka_data_dir }}/meta.properties"
+      become_user: "{{ kafka_user }}"
+
+    - name: Install systemd unit
+      copy:
+        dest: /etc/systemd/system/kafka.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Apache Kafka
+          After=network.target
+
+          [Service]
+          Type=simple
+          User={{ kafka_user }}
+          Group={{ kafka_group }}
+          ExecStart={{ kafka_install_dir }}/current/bin/kafka-server-start.sh /etc/kafka/server.properties
+          Restart=on-failure
+          LimitNOFILE=100000
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Kafka
+      systemd:
+        name: kafka
+        state: started
+        enabled: yes

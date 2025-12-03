@@ -25,16 +25,16 @@ ansible-playbook -i inventory/hosts.ini playbooks/bootstrap.yml
 echo "[INFO] Generating TLS keystore/truststore (demo self-signed)..."
 ansible-playbook -i inventory/hosts.ini playbooks/certs.yml
 
-echo "[INFO] Running Kafka cluster provisioning..."
-ansible-playbook -i inventory/hosts.ini playbooks/kafka.yml
+echo "[INFO] Running manual Kafka KRaft provisioning..."
+ansible-playbook -i inventory/hosts.ini playbooks/kafka_manual.yml
 
 echo "[INFO] Installing Node Exporter..."
 ansible-playbook -i inventory/hosts.ini playbooks/node_exporter.yml
 
-echo "[INFO] Installing JMX Exporter..."
-ansible-playbook -i inventory/hosts.ini playbooks/jmx.yml
-
 echo "[INFO] Installing Prometheus stack on observability node..."
 ansible-playbook -i inventory/hosts.ini playbooks/prometheus.yml
+
+echo "[INFO] Restarting Kafka Connect compose on connect node..."
+ansible-playbook -i inventory/hosts.ini playbooks/connect_restart.yml
 
 echo "[DONE] Cluster provisioning completed."

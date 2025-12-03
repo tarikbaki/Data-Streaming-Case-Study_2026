@@ -12,7 +12,7 @@ services:
       - "8083:8083"
       - "7777:7777"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "SASL_SSL://10.20.1.10:9092"
+      CONNECT_BOOTSTRAP_SERVERS: "192.168.56.10:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
@@ -24,9 +24,9 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java"
       CONNECT_JMX_PORT: "7777"
       KAFKA_OPTS: "-javaagent:/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=7777:/jmx-exporter/connect.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
-      CONNECT_SECURITY_PROTOCOL: "SASL_SSL"
-      CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
-      CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
+      CONNECT_SECURITY_PROTOCOL: "PLAINTEXT"
+#      CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
+#      CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
@@ -41,16 +41,16 @@ services:
       - "8084:8083"
       - "7778:7777"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "SASL_SSL://10.20.1.10:9092"
+      CONNECT_BOOTSTRAP_SERVERS: "192.168.56.10:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-2"
       CONNECT_PLUGIN_PATH: "/usr/share/java"
       CONNECT_JMX_PORT: "7777"
       KAFKA_OPTS: "-javaagent:/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=7777:/jmx-exporter/connect.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=7777"
-      CONNECT_SECURITY_PROTOCOL: "SASL_SSL"
-      CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
-      CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
+      CONNECT_SECURITY_PROTOCOL: "PLAINTEXT"
+#      CONNECT_SASL_MECHANISM: "SCRAM-SHA-512"
+#      CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"broker\" password=\"brokerpass\";"
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3

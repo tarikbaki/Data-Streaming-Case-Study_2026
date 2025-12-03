@@ -3,7 +3,7 @@
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
 
-Not: repo artik iki tat var. Cloud (AWS) hali `aws` branch'inde duruyor, lokal Vagrant ortamı `vagrant` branch'inde. Hangisini kullanacaksan önce ilgili brance gec: `git checkout aws` ya da `git checkout vagrant`. Digere bakmak istersen README'ler içinde de birbirine referans verdim ki kaybolmayayim.
+Not: repo artık iki opsiyonlu ilerliyor. Cloud (AWS) hali `aws` branch'inde, lokal Vagrant ortamı `vagrant` branch'inde. Hangisini kullanacaksan önce ilgili branch’e geç: `git checkout aws` ya da `git checkout vagrant`. Diğerine bakmak istersen README’lerde de referans bıraktım ki kaybolmayayım.
 
 ## Additional Reading
 Kafka üzerine daha önce yazdığım bir giriş yazısı:
@@ -202,4 +202,4 @@ docker-compose.yml içinde:
 - Tek komut: `make up` → `terraform/envs/vagrant` ile 4 broker + 3 controller + 1 connect + 1 observability VM ayağa kalkar, inventory/grafana targetları güncellenir, Kafka + node exporter + JMX exporter + Prometheus kurulur.
 - Başka env kullanmak için: `make TF_DIR=$(pwd)/terraform/envs/prod up`
 - Connect JMX exporteri: `cd connect/docker/jmx-exporter && chmod +x fetch_jmx_exporter.sh && ./fetch_jmx_exporter.sh`; sonra `cd .. && docker-compose up -d`
-- AWS tarafına bakacaksan `git checkout aws` deki README'de bulusuyoruz; Vagrant’ta kalacaksan `git checkout vagrant` yeterli. Karışmasın diye iki kolun README’lerinde bu notu yazdım.
+- AWS tarafına bakacaksan `git checkout aws` deki README'de bulusuyoruz; Vagrant’ta kalacaksan `git checkout vagrant` yeterli. Karışmasın diye iki kolun README’lerinde bu notu yazdım. Branch’leri GitHub’da göremiyorsan henüz push edilmemiş olabilir; istersen `git push origin aws` ve `git push origin vagrant` ile yayınlayabilirsin.

@@ -1,0 +1,18 @@
+- hosts: connect
+  become: yes
+  tasks:
+    - name: Ensure docker and compose are present
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Restart connect compose
+      shell: |
+        cd /home/vagrant/Data-Streaming-Case-Study_2026/connect/docker
+        docker-compose down
+        docker-compose up -d
+      args:
+        executable: /bin/bash
