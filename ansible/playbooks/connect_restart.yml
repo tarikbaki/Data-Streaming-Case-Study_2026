@@ -1,0 +1,75 @@
+- hosts: connect
+  become: yes
+  vars:
+    compose_dir: "/home/vagrant/Data-Streaming-Case-Study_2026/connect/docker"
+    jmx_version: "0.20.0"
+    jmx_url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/{{ jmx_version }}/jmx_prometheus_javaagent-{{ jmx_version }}.jar"
+    jmx_jar: "{{ compose_dir }}/jmx-exporter/jmx_prometheus_javaagent-{{ jmx_version }}.jar"
+  tasks:
+    - name: Proje docker klasorunu kopyala
+      become: false
+      synchronize:
+        src: "{{ playbook_dir }}/../../connect/docker/"
+        dest: "{{ compose_dir }}/"
+        _ssh_args: "-i {{ playbook_dir }}/../../terraform/envs/vagrant/.vagrant/machines/connect/virtualbox/private_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        rsync_opts:
+          - "--delete"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Docker paketlerini kur
+      apt:
+        name:
+          - docker.io
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: pip ile docker-compose kur
+      pip:
+        name: docker-compose
+        executable: pip3
+
+    - name: vagrant kullanicisini docker grubuna ekle
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: Docker servisini baslat
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Compose klasorunu olustur
+      file:
+        path: "{{ compose_dir }}"
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: JMX exporter jar indir
+      get_url:
+        url: "{{ jmx_url }}"
+        dest: "{{ jmx_jar }}"
+        mode: "0644"
+        owner: vagrant
+        group: vagrant
+
+    - name: docker-compose up -d
+      become_user: vagrant
+      environment:
+        PATH: "/usr/local/bin:/usr/bin:/bin"
+      args:
+        chdir: "{{ compose_dir }}"
+      shell: |
+        docker-compose down || true
+        docker-compose up -d
+
+    - name: 8083'e kadar bekle
+      wait_for:
+        host: 127.0.0.1
+        port: 8083
+        timeout: 120

@@ -18,7 +18,7 @@ OBS=$(terraform -chdir="$TF_DIR" output -raw obs_ip)
 join_lines() {
   local prefix=$1; shift
   for item in "$@"; do
-    echo "      - \"${item}\""
+    echo "        - \"${item}\""
   done
 }
 

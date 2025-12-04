@@ -32,7 +32,8 @@ i=0
 for ip in $BROKERS; do
   az="vgt-a"
   if [ $((i % 2)) -eq 1 ]; then az="vgt-b"; fi
-  echo "broker-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key" >> "$INV_FILE"
+  keyfile="$TF_DIR/.vagrant/machines/broker-$i/virtualbox/private_key"
+  echo "broker-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=$keyfile ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'" >> "$INV_FILE"
   i=$((i+1))
 done
 
@@ -46,17 +47,18 @@ for ip in $CONTROLLERS; do
   az="vgt-a"
   if [ $i -eq 1 ]; then az="vgt-b"; fi
   if [ $i -eq 2 ]; then az="vgt-c"; fi
-  echo "controller-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key" >> "$INV_FILE"
+  keyfile="$TF_DIR/.vagrant/machines/controller-$i/virtualbox/private_key"
+  echo "controller-$i ansible_host=$ip availability_zone=${az} ansible_user=vagrant ansible_ssh_private_key_file=$keyfile ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'" >> "$INV_FILE"
   i=$((i+1))
 done
 
 cat <<EOF >> "$INV_FILE"
 
 [connect]
-connect ansible_host=$CONNECT ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+connect ansible_host=$CONNECT ansible_user=vagrant ansible_ssh_private_key_file=$TF_DIR/.vagrant/machines/connect/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
 [observability]
-observability ansible_host=$OBS ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+observability ansible_host=$OBS ansible_user=vagrant ansible_ssh_private_key_file=$TF_DIR/.vagrant/machines/observability/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 EOF
 
 echo "Inventory güncellendi: $INV_FILE (TF_DIR=$TF_DIR)"

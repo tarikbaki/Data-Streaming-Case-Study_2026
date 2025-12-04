@@ -3,6 +3,10 @@
 
 - hosts: brokers,controllers,connect
   become: yes
+  vars:
+    ssl_keystore_password: "changeit"
+    ssl_truststore_password: "changeit"
+    ssl_key_password: "changeit"
   tasks:
     - name: gerekli klasorleri ac
       file:

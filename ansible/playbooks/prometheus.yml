@@ -9,9 +9,10 @@
     prom_data_dir: /var/lib/prometheus
     prom_user: prometheus
     prom_group: prometheus
-    prom_tar: "prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    prom_arch: "linux-arm64"
+    prom_tar: "prometheus-{{ prometheus_version }}.{{ prom_arch }}.tar.gz"
     prom_url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/{{ prom_tar }}"
-    prom_extract_dir: "{{ prom_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64"
+    prom_extract_dir: "{{ prom_install_dir }}/prometheus-{{ prometheus_version }}.{{ prom_arch }}"
   tasks:
     - name: Prometheus kullanicisi olustur
       ansible.builtin.user:

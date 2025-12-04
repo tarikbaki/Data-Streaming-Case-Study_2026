@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: brokers,controllers
   gather_facts: yes
   become: yes
   vars:
@@ -13,6 +13,15 @@
     controller_quorum: "0@controller-0:9093,1@controller-1:9093,2@controller-2:9093"
 
   tasks:
+    - name: Node id set et
+      set_fact:
+        node_id: >-
+          {{ (inventory_hostname | regex_search('[0-9]+') | int) + (0 if inventory_hostname in groups['controllers'] else 10) }}
+        controller_quorum_rendered: >-
+          {% for h in groups['controllers'] -%}
+          {{ loop.index0 }}@{{ hostvars[h].ansible_host }}:9093{% if not loop.last %},{% endif %}
+          {%- endfor %}
+
     - name: Ensure kafka group exists
       group:
         name: "{{ kafka_group }}"
@@ -63,6 +72,14 @@
         group: "{{ kafka_group }}"
         mode: "0750"
 
+    - name: Create log dir
+      file:
+        path: "{{ kafka_install_dir }}/current/logs"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: "0755"
+
     - name: Create config dir
       file:
         path: /etc/kafka
@@ -79,12 +96,16 @@
         mode: "0644"
         content: |
           process.roles={{ 'controller' if inventory_hostname in groups['controllers'] else 'broker' }}
-          node.id={{ inventory_hostname | regex_findall('[0-9]+') | first | int }}
+          node.id={{ node_id }}
+          controller.quorum.voters={{ controller_quorum_rendered | trim }}
           controller.listener.names=CONTROLLER
-          listeners={{ 'CONTROLLER://:9093' if inventory_hostname in groups['controllers'] else 'PLAINTEXT://:9092,CONTROLLER://:9093' }}
-          advertised.listeners={{ 'CONTROLLER://'+inventory_hostname+':9093' if inventory_hostname in groups['controllers'] else 'PLAINTEXT://'+ansible_host+':9092' }}
+          {% if inventory_hostname in groups['controllers'] %}
+          listeners=CONTROLLER://0.0.0.0:9093
+          {% else %}
+          listeners=PLAINTEXT://0.0.0.0:9092
+          advertised.listeners=PLAINTEXT://{{ ansible_host }}:9092
           inter.broker.listener.name=PLAINTEXT
-          controller.quorum.voters={{ controller_quorum }}
+          {% endif %}
           log.dirs={{ kafka_data_dir }}
           num.partitions=3
           offsets.topic.replication.factor=3
@@ -99,6 +120,8 @@
       args:
         creates: "{{ kafka_data_dir }}/meta.properties"
       become_user: "{{ kafka_user }}"
+      environment:
+        TMPDIR: /tmp
 
     - name: Install systemd unit
       copy:
