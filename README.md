@@ -1,9 +1,12 @@
 # Trendyol Data Streaming Case – ReadME
+Lütfen diğer branchlere de bak :) 
+1 AWS branch
+2 Vgrant branch 
 
 Bu dosya, case kapsamında yaptığım tüm adımların uçtan uca nasıl çalıştığını özetler.  
 Adımları sade ve net biçimde ilerlettim.
 
-Not: repo artik iki tat var. Cloud (AWS) hali `aws` branch'inde duruyor, lokal Vagrant ortamı `vagrant` branch'inde. Hangisini kullanacaksan önce ilgili brance gec: `git checkout aws` ya da `git checkout vagrant`. Digere bakmak istersen README'ler içinde de birbirine referans verdim ki kaybolmayayim.
+Not: repo artik iki branch var. Cloud (AWS) hali `aws` branch'inde duruyor, lokal Vagrant ortamı `vagrant` branch'inde. Hangisini kullanacaksan önce ilgili brance gec: `git checkout aws` ya da `git checkout vagrant`. Digere bakmak istersen README'ler içinde de birbirine referans verdim ki kaybolmayayim.
 
 ## Additional Reading
 Kafka üzerine daha önce yazdığım bir giriş yazısı:
